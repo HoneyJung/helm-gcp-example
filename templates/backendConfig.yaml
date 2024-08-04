@@ -1,0 +1,7 @@
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: {{ .Values.kubernetes.app }}-backendconfig
+  namespace: {{ .Values.kubernetes.namespace }}
+spec:
+  timeoutSec: 600

@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.kubernetes.app }}
+  labels:
+    app: {{ .Values.kubernetes.app }}
+  namespace: {{ .Values.kubernetes.namespace }}
+spec:
+  replicas: {{ .Values.kubernetes.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.kubernetes.app }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: {{ .Values.kubernetes.maxSurge }}
+      maxUnavailable: {{ .Values.kubernetes.maxUnavailable }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.kubernetes.app }}
+    spec:
+      containers:
+        - name: {{ .Values.kubernetes.app }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          livenessProbe:
+            httpGet:
+              path: /api/health-liveness
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/health-readiness
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.kubernetes.app }}-secret
+          resources:
+            requests:
+              cpu: {{ .Values.resource.request.cpu }}
+              memory: {{ .Values.resource.request.memory }}
+            limits:
+              cpu: {{ .Values.resource.limit.cpu }}
+              memory: {{ .Values.resource.limit.memory }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - {{ .Values.kubernetes.app }}
+              topologyKey: "kubernetes.io/hostname"
+      terminationGracePeriodSeconds: 600

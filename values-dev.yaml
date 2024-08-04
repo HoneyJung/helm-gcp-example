@@ -1,0 +1,22 @@
+deployment: dev
+cert:
+  name:
+domain:
+  api: Your Domain
+gcp:
+  cluster:
+    name:
+
+image:
+  repository: Docker Registry Repository Address
+  tag: t20240802074901
+  pullPolicy: IfNotPresent
+
+resource:
+  request:
+    cpu: "500m"
+    memory: "500Mi"
+  limit:
+    cpu: "2"
+    memory: "2Gi"
+

@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.kubernetes.app }}-ingress
+  namespace: {{ .Values.kubernetes.namespace }}
+  annotations:
+    networking.gke.io/managed-certificates: {{ .Values.cert.name }}
+    networking.gke.io/v1beta1.FrontendConfig: {{ .Values.kubernetes.app }}-frontendconfig
+
+spec:
+  rules:
+    - host: {{ .Values.domain.api }}
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.kubernetes.app }}
+                port:
+                  number: {{ .Values.service.port }}

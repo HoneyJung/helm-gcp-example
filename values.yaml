@@ -1,0 +1,19 @@
+gcp:
+  project:
+    id:
+  cluster:
+    zone:
+  secretManager:
+    version: latest
+
+service:
+  port: 80
+  targetPort: 3000
+
+kubernetes:
+  app:
+  namespace:
+  replicas: 1
+  maxSurge: 100%
+  maxUnavailable: 50%
+
